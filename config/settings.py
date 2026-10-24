@@ -1,30 +1,31 @@
-from pathlib import Path
-
 import os
 from pathlib import Path
-
 from django.core.exceptions import ImproperlyConfigured
-from dotenv import load_dotenv
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-load_dotenv(BASE_DIR / '.env')
+# --- SÉCURITÉ ---
+# En production, remplacez cette clé par une vraie clé secrète générée aléatoirement
+SECRET_KEY = 'django-insecure-remplacez-moi-par-une-vraie-cle-plus-tard'
 
+# Mettez False quand votre site sera prêt pour la production
+DEBUG = True
 
-def lire_liste(nom):
-    return [valeur.strip() for valeur in os.environ.get(nom, '').split(',') if valeur.strip()]
+# --- HÔTES AUTORISÉS ---
+ALLOWED_HOSTS = [
+    '*********.domain.com', # à modifier
+]
 
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
+# --- CSRF ET CORS (Pour que l'admin et l'API fonctionnent en HTTPS) ---
+CSRF_TRUSTED_ORIGINS = [
+    'https://*********.domain.app', # à modifier
+    'https://*********.domain.com', # à modifier
+]
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
-if not SECRET_KEY:
-    if DEBUG:
-        SECRET_KEY = 'django-insecure-cle-de-developpement-uniquement'
-    else:
-        raise ImproperlyConfigured('DJANGO_SECRET_KEY est obligatoire en production.')
-
-ALLOWED_HOSTS = lire_liste('DJANGO_ALLOWED_HOSTS')
-
+CORS_ALLOWED_ORIGINS = [
+    'https://*********.domain.app' # à modifier
+]
 
 # Application definition
 
@@ -136,22 +137,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
 STATIC_URL = 'static/'
-
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-CORS_ALLOWED_ORIGINS = lire_liste('CORS_ALLOWED_ORIGINS')
-CSRF_TRUSTED_ORIGINS = lire_liste('CSRF_TRUSTED_ORIGINS')
-
+# Sécurité des cookies (Seulement si DEBUG = False)
 if not DEBUG:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-
-# Email
-# https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
-
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+# Configuration des e-mails (Correction du nom de la variable)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
